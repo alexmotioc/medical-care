@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MedicalCareApp.Models;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicalCareApp.Controllers
 {
@@ -38,6 +38,18 @@ namespace MedicalCareApp.Controllers
         public void POST(Patient patient)
         {
             _context.Patients.Add(patient);
+            _context.SaveChanges();
+        }
+
+        [HttpPut("{id}")]
+        public void PUT([FromBody] Patient patient, [FromRoute] int id)
+        {
+            var patient1 = _context.Patients.Find(id);
+            patient1.Name = patient.Name;
+            patient1.BirthDate = patient.BirthDate;
+            patient1.Gender = patient.Gender;
+            patient1.Address = patient.Address;
+            _context.Entry(patient1).State = EntityState.Modified;
             _context.SaveChanges();
         }
 
