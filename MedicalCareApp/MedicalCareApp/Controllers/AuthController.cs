@@ -29,6 +29,13 @@ namespace MedicalCareApp.Controllers
             _context = context;
         }
         //MedicalCareDBEntities db = new MedicalCareDBEntities();
+        [HttpGet]
+        public string get()
+        {
+            return "hello";
+
+        }
+
 
         [HttpPost]
         // POST api/values

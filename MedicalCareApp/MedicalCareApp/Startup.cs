@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MedicalCareApp.Bus;
 using MedicalCareApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,13 +35,22 @@ namespace MedicalCareApp
 
 
             });
-            services.AddCors(option => option.AddPolicy("MedAPIPolicy", builder => {
-                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            //services.AddCors(option => option.AddPolicy("MedAPIPolicy", builder => {
+            //    builder.WithOrigins("https://localhost:3001").AllowAnyHeader().AllowAnyMethod();
 
-            }));
+            //}));
+            services.AddCors();
             services.AddControllers();
 
             services.AddSingleton<MedicalCareDBContext>();
+            services.AddSingleton<RabbitMQService>();
+            services.AddSingleton<GetNotificationConsumer>();
+            
+            //services.AddSingleton<RabbitMQService>();
+            //services.Configure<IISServerOptions>(options =>
+            //{
+            //    options.AllowSynchronousIO = true;
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,23 +60,25 @@ namespace MedicalCareApp
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseRabbitMQMiddleware();
             app.UseSwagger();
-            app.UseCors("MedAPIPolicy");
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseCors(
+                options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+            );
+            //app.UseCors(op => op.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V2");
             });
-            
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            
+            
 
         }
     }

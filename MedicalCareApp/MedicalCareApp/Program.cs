@@ -21,6 +21,7 @@ namespace MedicalCareApp
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    //.UseIISIntegration().UseIIS();
                 });
     }
 }
